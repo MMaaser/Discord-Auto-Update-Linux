@@ -1,14 +1,14 @@
 #! /bin/bash
 
-# If this isn't already being run in konsole, run it in a new konsole window
-if [ -z "$KONSOLE_DBUS_SESSION" ]; then
-    konsole --hold -e "$0" "$@"
-    exit
-fi
-
 export DISPLAY=:0
 export XDG_CURRENT_DESKTOP=KDE
 export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+
+# save file descriptor for this terminal
+exec 3>&1 4>&2
+
+# make it shut up
+exec > /dev/null 2>&1
 
 #url information
 download_html=$(/usr/bin/curl https://discord.com/api/download?platform=linux&format=tar.gz)
@@ -49,6 +49,9 @@ deviceVersion=$(pacman -Q discord)
 #remove these lines if you've already changed these settings through a system editor, like application editor on KDE
 sed 's/Exec=/Exec="$(readlink -f "${BASH_SOURCE}")"/' /home/"$USER"/.local/share/applications/discord.desktop #changes the script discord.desktop runs to this one
 sed 's/Terminal=/Terminal=true/' /home/"$USER"/.local/share/applications/discord.desktop
+
+# let it speak
+exec > /dev/tty 2>/dev/tty
 
 #check if latest version = device version, then downloads the latest version if they don't match up 
 if [[ $deviceVersion != *$version* ]]; then
