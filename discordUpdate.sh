@@ -1,5 +1,13 @@
 #! /bin/bash
 
+# If this isn't already being run in konsole, run it in a new konsole window
+
+if [ -z "$KONSOLE_DBUS_SESSION" ]; then
+    konsole --hold -e "$0" "$@"
+    exit
+
+fi
+
 export DISPLAY=:0
 export XDG_CURRENT_DESKTOP=KDE
 export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
@@ -46,7 +54,7 @@ done
 version=${download_html:$startNum:$((endNum - startNum))}
 deviceVersion=$(pacman -Q discord)
 
-#remove these lines if you've already changed these settings through a system editor, like application editor on KDE
+#remove these lines if you've already changed these settings through a system editor, like application editor on KDE for 0.001 nanosecond of better performance
 sed 's/Exec=/Exec="$(readlink -f "${BASH_SOURCE}")"/' /home/"$USER"/.local/share/applications/discord.desktop #changes the script discord.desktop runs to this one
 sed 's/Terminal=/Terminal=true/' /home/"$USER"/.local/share/applications/discord.desktop
 
